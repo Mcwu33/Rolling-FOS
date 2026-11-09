@@ -48,63 +48,83 @@
                 </div>
             </div>
 
-            <!-- Part 2: 5 Selections / Categories -->
-            <div class="space-y-3">
+            <!-- Part 2: 5 Selections / Categories with Detail Lists -->
+            <div class="space-y-4">
                 <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold px-1">Today's Logs</h3>
                 
-                <div onclick="openLogModal('breakfast')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 rounded-xl flex justify-between items-center cursor-pointer transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-mug-hot"></i></div>
-                        <div>
-                            <h4 class="font-semibold text-sm">Breakfast</h4>
-                            <p id="summary-breakfast" class="text-xs text-slate-400">0 items logged</p>
+                <!-- Breakfast -->
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl space-y-3">
+                    <div onclick="openLogModal('breakfast')" class="flex justify-between items-center cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-mug-hot"></i></div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Breakfast</h4>
+                                <p id="summary-breakfast" class="text-xs text-slate-400">0 items logged</p>
+                            </div>
                         </div>
+                        <i class="fa-solid fa-plus text-slate-400 p-2"></i>
                     </div>
-                    <i class="fa-solid fa-plus text-slate-400"></i>
+                    <div id="list-breakfast" class="space-y-1.5 pt-2 border-t border-slate-700/50"></div>
                 </div>
 
-                <div onclick="openLogModal('lunch')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 rounded-xl flex justify-between items-center cursor-pointer transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center"><i class="fa-solid fa-utensils"></i></div>
-                        <div>
-                            <h4 class="font-semibold text-sm">Lunch</h4>
-                            <p id="summary-lunch" class="text-xs text-slate-400">0 items logged</p>
+                <!-- Lunch -->
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl space-y-3">
+                    <div onclick="openLogModal('lunch')" class="flex justify-between items-center cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center"><i class="fa-solid fa-utensils"></i></div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Lunch</h4>
+                                <p id="summary-lunch" class="text-xs text-slate-400">0 items logged</p>
+                            </div>
                         </div>
+                        <i class="fa-solid fa-plus text-slate-400 p-2"></i>
                     </div>
-                    <i class="fa-solid fa-plus text-slate-400"></i>
+                    <div id="list-lunch" class="space-y-1.5 pt-2 border-t border-slate-700/50"></div>
                 </div>
 
-                <div onclick="openLogModal('dinner')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 rounded-xl flex justify-between items-center cursor-pointer transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-moon"></i></div>
-                        <div>
-                            <h4 class="font-semibold text-sm">Dinner</h4>
-                            <p id="summary-dinner" class="text-xs text-slate-400">0 items logged</p>
+                <!-- Dinner -->
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl space-y-3">
+                    <div onclick="openLogModal('dinner')" class="flex justify-between items-center cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-moon"></i></div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Dinner</h4>
+                                <p id="summary-dinner" class="text-xs text-slate-400">0 items logged</p>
+                            </div>
                         </div>
+                        <i class="fa-solid fa-plus text-slate-400 p-2"></i>
                     </div>
-                    <i class="fa-solid fa-plus text-slate-400"></i>
+                    <div id="list-dinner" class="space-y-1.5 pt-2 border-t border-slate-700/50"></div>
                 </div>
 
-                <div onclick="openLogModal('snack')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 rounded-xl flex justify-between items-center cursor-pointer transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center"><i class="fa-solid fa-cookie-bite"></i></div>
-                        <div>
-                            <h4 class="font-semibold text-sm">Snack</h4>
-                            <p id="summary-snack" class="text-xs text-slate-400">0 items logged</p>
+                <!-- Snack -->
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl space-y-3">
+                    <div onclick="openLogModal('snack')" class="flex justify-between items-center cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center"><i class="fa-solid fa-cookie-bite"></i></div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Snack</h4>
+                                <p id="summary-snack" class="text-xs text-slate-400">0 items logged</p>
+                            </div>
                         </div>
+                        <i class="fa-solid fa-plus text-slate-400 p-2"></i>
                     </div>
-                    <i class="fa-solid fa-plus text-slate-400"></i>
+                    <div id="list-snack" class="space-y-1.5 pt-2 border-t border-slate-700/50"></div>
                 </div>
 
-                <div onclick="openLogModal('exercise')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 p-4 rounded-xl flex justify-between items-center cursor-pointer transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-person-running"></i></div>
-                        <div>
-                            <h4 class="font-semibold text-sm">Exercise Log</h4>
-                            <p id="summary-exercise" class="text-xs text-slate-400">0 items logged</p>
+                <!-- Exercise Log -->
+                <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl space-y-3">
+                    <div onclick="openLogModal('exercise')" class="flex justify-between items-center cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-person-running"></i></div>
+                            <div>
+                                <h4 class="font-semibold text-sm">Exercise Log</h4>
+                                <p id="summary-exercise" class="text-xs text-slate-400">0 items logged</p>
+                            </div>
                         </div>
+                        <i class="fa-solid fa-plus text-slate-400 p-2"></i>
                     </div>
-                    <i class="fa-solid fa-plus text-slate-400"></i>
+                    <div id="list-exercise" class="space-y-1.5 pt-2 border-t border-slate-700/50"></div>
                 </div>
             </div>
         </section>
@@ -136,11 +156,11 @@
                 <div class="grid grid-cols-3 gap-3 text-center">
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
                         <span class="text-[10px] text-slate-400 block">Weight</span>
-                        <span id="profile-display-weight" class="text-lg font-bold text-cyan-400">93</span> <span class="text-xs text-slate-500">kg</span>
+                        <span id="profile-display-weight" class="text-lg font-bold text-cyan-400">0</span> <span class="text-xs text-slate-500">kg</span>
                     </div>
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
                         <span class="text-[10px] text-slate-400 block">Height</span>
-                        <span id="profile-display-height" class="text-lg font-bold text-emerald-400">179</span> <span class="text-xs text-slate-500">cm</span>
+                        <span id="profile-display-height" class="text-lg font-bold text-emerald-400">0</span> <span class="text-xs text-slate-500">cm</span>
                     </div>
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
                         <span class="text-[10px] text-slate-400 block">Goal</span>
@@ -150,8 +170,8 @@
 
                 <!-- BMI & Water Recommendation -->
                 <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
-                    <div class="flex justify-between"><span class="text-slate-400">Recommended BMI Status:</span> <span id="bmi-status" class="font-bold text-cyan-400">Calculating...</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400">Recommended Water Volume:</span> <span id="water-status" class="font-bold text-emerald-400">3.0 Liters</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Recommended BMI Status:</span> <span id="bmi-status" class="font-bold text-cyan-400">Please setup profile</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Recommended Water Volume:</span> <span id="water-status" class="font-bold text-emerald-400">0.0 Liters</span></div>
                 </div>
 
                 <!-- Settings Inputs -->
@@ -159,11 +179,11 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">Height (cm)</label>
-                            <input type="number" id="input-height" value="179" onchange="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
+                            <input type="number" id="input-height" placeholder="e.g., 179" oninput="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
                         </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">Weight (kg)</label>
-                            <input type="number" id="input-weight" value="93" onchange="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
+                            <input type="number" id="input-weight" placeholder="e.g., 93" oninput="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
@@ -176,38 +196,23 @@
                         </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">Calories Goal</label>
-                            <input type="number" id="input-goal" value="1900" onchange="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
+                            <input type="number" id="input-goal" value="1900" oninput="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Alarms Settings -->
+            <!-- Alarms Settings (Dynamic Add/Delete) -->
             <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
-                <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Reminder Alarms</h3>
-                
-                <!-- Part 1: Post Meal Reminder -->
-                <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <div>
-                        <h4 class="text-sm font-semibold">Post Meal Reminder</h4>
-                        <p class="text-[10px] text-slate-400">Alert after meal logging</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="time" id="alarm-meal-time" value="13:00" onchange="saveAlarms()" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none">
-                        <input type="checkbox" id="alarm-meal-toggle" onchange="saveAlarms()" class="w-4 h-4 accent-cyan-500 cursor-pointer">
-                    </div>
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Reminder Alarms</h3>
+                    <button onclick="addAlarm()" class="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                        <i class="fa-solid fa-plus"></i><span>Customize Timer</span>
+                    </button>
                 </div>
-
-                <!-- Part 2: Water Reminder -->
-                <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
-                    <div>
-                        <h4 class="text-sm font-semibold">Water Reminder</h4>
-                        <p class="text-[10px] text-slate-400">Stay hydrated throughout the day</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="time" id="alarm-water-time" value="10:00" onchange="saveAlarms()" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none">
-                        <input type="checkbox" id="alarm-water-toggle" onchange="saveAlarms()" class="w-4 h-4 accent-cyan-500 cursor-pointer">
-                    </div>
+                
+                <div id="alarms-container" class="space-y-3">
+                    <!-- Dynamic alarms will load here -->
                 </div>
             </div>
 
@@ -261,13 +266,26 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC (ROBUST & ERROR SAFE) -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        let currentDate = new Date().toISOString().split('T')[0];
+        // Get local date string YYYY-MM-DD safely
+        function getLocalDateString(d = new Date()) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        let currentDate = getLocalDateString();
         let currentCategory = '';
+        
+        // Default appData with privacy blank profile for new visitors
         let appData = {
-            profile: { height: 179, weight: 93, gender: 'male', goal: 1900 },
-            alarms: { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false },
+            profile: { height: '', weight: '', gender: 'male', goal: 1900 },
+            alarms: [
+                { id: 1, title: 'Post Meal Reminder', time: '13:00', active: false },
+                { id: 2, title: 'Water Reminder', time: '10:00', active: false }
+            ],
             logs: {}
         };
 
@@ -275,6 +293,12 @@
             const saved = localStorage.getItem('rolling_fitness_data');
             if (saved) {
                 appData = JSON.parse(saved);
+                if(!appData.alarms) {
+                    appData.alarms = [
+                        { id: 1, title: 'Post Meal Reminder', time: '13:00', active: false },
+                        { id: 2, title: 'Water Reminder', time: '10:00', active: false }
+                    ];
+                }
             }
         } catch (e) {
             console.error('Storage load error:', e);
@@ -285,7 +309,7 @@
             if(datePicker) datePicker.value = currentDate;
             updateHeaderDate();
             loadProfileToUI();
-            loadAlarmsToUI();
+            renderAlarms();
             renderDashboard();
         });
 
@@ -313,17 +337,31 @@
                     btn.classList.add('text-slate-400');
                 }
             }
-            if(tabNum === 2) renderSummaryScreen();
+
+            // Requirement: Clicking Summary tab always resets to Today's date
+            if(tabNum === 2) {
+                currentDate = getLocalDateString();
+                const dp = document.getElementById('summary-date-picker');
+                if(dp) dp.value = currentDate;
+                updateHeaderDate();
+                renderSummaryScreen();
+            } else if(tabNum === 1) {
+                currentDate = getLocalDateString();
+                updateHeaderDate();
+                renderDashboard();
+            }
         }
 
+        // Smooth Date Navigation
         function changeDate(days) {
-            let d = new Date(currentDate + 'T00:00:00');
-            d.setDate(d.getDate() + days);
-            currentDate = d.toISOString().split('T')[0];
+            let [y, m, d] = currentDate.split('-').map(Number);
+            let dObj = new Date(y, m - 1, d);
+            dObj.setDate(dObj.getDate() + days);
+            currentDate = getLocalDateString(dObj);
+            
             const dp = document.getElementById('summary-date-picker');
             if(dp) dp.value = currentDate;
             updateHeaderDate();
-            renderDashboard();
             renderSummaryScreen();
         }
 
@@ -331,7 +369,6 @@
             if(!val) return;
             currentDate = val;
             updateHeaderDate();
-            renderDashboard();
             renderSummaryScreen();
         }
 
@@ -380,10 +417,18 @@
                 appData.logs[currentDate] = { breakfast: [], lunch: [], dinner: [], snack: [], exercise: [] };
             }
 
-            appData.logs[currentDate][currentCategory].push({ name, cal });
+            appData.logs[currentDate][currentCategory].push({ id: Date.now(), name, cal });
             saveToStorage();
             closeLogModal();
             renderDashboard();
+        }
+
+        function deleteLogItem(category, itemId) {
+            if(appData.logs[currentDate] && appData.logs[currentDate][category]) {
+                appData.logs[currentDate][category] = appData.logs[currentDate][category].filter(item => item.id !== itemId);
+                saveToStorage();
+                renderDashboard();
+            }
         }
 
         function saveToStorage() {
@@ -404,21 +449,63 @@
                 const items = dayLogs[cat] || [];
                 const catSum = items.reduce((acc, item) => acc + item.cal, 0);
                 totalIn += catSum;
+                
                 const sumEl = document.getElementById(`summary-${cat}`);
                 if(sumEl) {
                     sumEl.innerText = items.length > 0 ? `${items.length} items (${catSum} kcal)` : '0 items logged';
+                }
+
+                // Render list items with delete button
+                const listEl = document.getElementById(`list-${cat}`);
+                if(listEl) {
+                    if(items.length === 0) {
+                        listEl.innerHTML = `<p class="text-[11px] text-slate-500 italic">No records yet</p>`;
+                    } else {
+                        let html = '';
+                        items.forEach(item => {
+                            html += `<div class="flex justify-between items-center bg-slate-900/60 px-3 py-1.5 rounded-lg text-xs">
+                                <span class="text-slate-200">${item.name}</span>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-cyan-400 font-medium">${item.cal} kcal</span>
+                                    <button onclick="deleteLogItem('${cat}', ${item.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                </div>
+                            </div>`;
+                        });
+                        listEl.innerHTML = html;
+                    }
                 }
             });
 
             const exItems = dayLogs['exercise'] || [];
             totalBurned = exItems.reduce((acc, item) => acc + item.cal, 0);
+            
             const exSumEl = document.getElementById(`summary-exercise`);
             if(exSumEl) {
                 exSumEl.innerText = exItems.length > 0 ? `${exItems.length} activities (${totalBurned} kcal burned)` : '0 items logged';
             }
 
+            const exListEl = document.getElementById(`list-exercise`);
+            if(exListEl) {
+                if(exItems.length === 0) {
+                    exListEl.innerHTML = `<p class="text-[11px] text-slate-500 italic">No records yet</p>`;
+                } else {
+                    let html = '';
+                    exItems.forEach(item => {
+                        html += `<div class="flex justify-between items-center bg-slate-900/60 px-3 py-1.5 rounded-lg text-xs">
+                            <span class="text-slate-200">${item.name}</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-emerald-400 font-medium">-${item.cal} kcal</span>
+                                <button onclick="deleteLogItem('exercise', ${item.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                            </div>
+                        </div>`;
+                    });
+                    exListEl.innerHTML = html;
+                }
+            }
+
             const goal = (appData.profile && appData.profile.goal) || 1900;
-            const left = goal - totalIn + totalBurned;
+            // Formula updated: Left = Goal - Total Intake (Burned is NOT added into Left anymore)
+            const left = goal - totalIn;
 
             const leftEl = document.getElementById('stat-left');
             const burnedEl = document.getElementById('stat-burned');
@@ -472,10 +559,10 @@
             const goal = document.getElementById('input-goal');
 
             if(!appData.profile) appData.profile = {};
-            if(h) appData.profile.height = parseFloat(h.value) || 179;
-            if(w) appData.profile.weight = parseFloat(w.value) || 93;
+            if(h) appData.profile.height = h.value === '' ? '' : parseFloat(h.value);
+            if(w) appData.profile.weight = w.value === '' ? '' : parseFloat(w.value);
             if(g) appData.profile.gender = g.value;
-            if(goal) appData.profile.goal = parseInt(goal.value) || 1900;
+            if(goal) appData.profile.goal = goal.value === '' ? 1900 : parseInt(goal.value);
 
             saveToStorage();
             loadProfileToUI();
@@ -483,7 +570,7 @@
         }
 
         function loadProfileToUI() {
-            const p = appData.profile || { height: 179, weight: 93, gender: 'male', goal: 1900 };
+            const p = appData.profile || { height: '', weight: '', gender: 'male', goal: 1900 };
             
             const ih = document.getElementById('input-height');
             const iw = document.getElementById('input-weight');
@@ -499,51 +586,79 @@
             const dh = document.getElementById('profile-display-height');
             const dg = document.getElementById('profile-display-goal');
 
-            if(dw) dw.innerText = p.weight;
-            if(dh) dh.innerText = p.height;
-            if(dg) dg.innerText = p.goal;
-
-            const heightM = p.height / 100;
-            const bmi = (p.weight / (heightM * heightM)).toFixed(1);
-            let status = '';
-            if(bmi < 18.5) status = `Underweight (${bmi})`;
-            else if(bmi < 25) status = `Normal (${bmi})`;
-            else if(bmi < 30) status = `Overweight (${bmi})`;
-            else status = `Obese (${bmi})`;
+            if(dw) dw.innerText = p.weight !== '' ? p.weight : '0';
+            if(dh) dh.innerText = p.height !== '' ? p.height : '0';
+            if(dg) dg.innerText = p.goal !== '' ? p.goal : '1900';
 
             const bmiEl = document.getElementById('bmi-status');
-            if(bmiEl) bmiEl.innerText = status;
-
-            const waterL = ((p.weight * 0.035)).toFixed(1);
             const waterEl = document.getElementById('water-status');
-            if(waterEl) waterEl.innerText = `${waterL} Liters`;
+
+            if(p.height && p.weight && p.height > 0 && p.weight > 0) {
+                const heightM = p.height / 100;
+                const bmi = (p.weight / (heightM * heightM)).toFixed(1);
+                let status = '';
+                if(bmi < 18.5) status = `Underweight (${bmi})`;
+                else if(bmi < 25) status = `Normal (${bmi})`;
+                else if(bmi < 30) status = `Overweight (${bmi})`;
+                else status = `Obese (${bmi})`;
+
+                if(bmiEl) bmiEl.innerText = status;
+                const waterL = ((p.weight * 0.035)).toFixed(1);
+                if(waterEl) waterEl.innerText = `${waterL} Liters`;
+            } else {
+                if(bmiEl) bmiEl.innerText = 'Please setup profile';
+                if(waterEl) waterEl.innerText = '0.0 Liters';
+            }
         }
 
-        function saveAlarms() {
-            const mt = document.getElementById('alarm-meal-time');
-            const mc = document.getElementById('alarm-meal-toggle');
-            const wt = document.getElementById('alarm-water-time');
-            const wc = document.getElementById('alarm-water-toggle');
-
-            if(!appData.alarms) appData.alarms = {};
-            if(mt) appData.alarms.mealTime = mt.value;
-            if(mc) appData.alarms.mealActive = mc.checked;
-            if(wt) appData.alarms.waterTime = wt.value;
-            if(wc) appData.alarms.waterActive = wc.checked;
+        // Alarm Dynamic Add & Delete
+        function addAlarm() {
+            if(!appData.alarms) appData.alarms = [];
+            const newId = Date.now();
+            appData.alarms.push({ id: newId, title: 'Custom Reminder', time: '12:00', active: false });
             saveToStorage();
+            renderAlarms();
         }
 
-        function loadAlarmsToUI() {
-            const a = appData.alarms || { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false };
-            const mt = document.getElementById('alarm-meal-time');
-            const mc = document.getElementById('alarm-meal-toggle');
-            const wt = document.getElementById('alarm-water-time');
-            const wc = document.getElementById('alarm-water-toggle');
+        function deleteAlarm(id) {
+            appData.alarms = appData.alarms.filter(a => a.id !== id);
+            saveToStorage();
+            renderAlarms();
+        }
 
-            if(mt) mt.value = a.mealTime;
-            if(mc) mc.checked = a.mealActive;
-            if(wt) wt.value = a.waterTime;
-            if(wc) wc.checked = a.waterActive;
+        function updateAlarm(id, field, value) {
+            const alarm = appData.alarms.find(a => a.id === id);
+            if(alarm) {
+                if(field === 'time') alarm.time = value;
+                if(field === 'active') alarm.active = value;
+                saveToStorage();
+            }
+        }
+
+        function renderAlarms() {
+            const container = document.getElementById('alarms-container');
+            if(!container) return;
+            
+            if(!appData.alarms || appData.alarms.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-2">No custom timers added.</p>`;
+                return;
+            }
+
+            let html = '';
+            appData.alarms.forEach(a => {
+                html += `<div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <div>
+                        <input type="text" value="${a.title}" oninput="updateAlarm(${a.id}, 'title', this.value)" class="text-sm font-semibold bg-transparent text-slate-200 outline-none border-b border-transparent focus:border-cyan-400 w-36">
+                        <p class="text-[10px] text-slate-400">Custom alert timer</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="time" value="${a.time}" onchange="updateAlarm(${a.id}, 'time', this.value)" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none text-slate-200">
+                        <input type="checkbox" ${a.active ? 'checked' : ''} onchange="updateAlarm(${a.id}, 'active', this.checked)" class="w-4 h-4 accent-cyan-500 cursor-pointer">
+                        <button onclick="deleteAlarm(${a.id})" class="text-rose-400 hover:text-rose-300 ml-1"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
         }
     </script>
 </body>
