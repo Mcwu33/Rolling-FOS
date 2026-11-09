@@ -12,6 +12,11 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 强制确保只有带 active 的页面才显示，解决挤在同一页的 bug */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
 </head>
 <body class="pb-24 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
 
@@ -344,6 +349,7 @@
         }
 
         function switchTab(tabNum) {
+            // 确保安全切换各个 Tab 页面
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(`screen-${tabNum}`);
             if(target) target.classList.add('active');
@@ -715,7 +721,6 @@
             }
 
             let html = '';
-            appData.customAlarms.data?.forEach?.(...) // fallback
             appData.customAlarms.forEach(a => {
                 html += `<div class="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between items-center">
                     <div>
