@@ -261,20 +261,28 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC (ROBUST & ERROR SAFE) -->
     <script>
-        // State Management
         let currentDate = new Date().toISOString().split('T')[0];
         let currentCategory = '';
-        let appData = JSON.parse(localStorage.getItem('rolling_fitness_data')) || {
+        let appData = {
             profile: { height: 179, weight: 93, gender: 'male', goal: 1900 },
             alarms: { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false },
-            logs: {} // format: { 'YYYY-MM-DD': { breakfast: [...], lunch: [...], dinner: [...], snack: [...], exercise: [...] } }
+            logs: {}
         };
 
-        // Initialize App
+        try {
+            const saved = localStorage.getItem('rolling_fitness_data');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error('Storage load error:', e);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('summary-date-picker').value = currentDate;
+            const datePicker = document.getElementById('summary-date-picker');
+            if(datePicker) datePicker.value = currentDate;
             updateHeaderDate();
             loadProfileToUI();
             loadAlarmsToUI();
@@ -282,18 +290,21 @@
         });
 
         function updateHeaderDate() {
+            const el = document.getElementById('header-date');
+            if(!el) return;
             const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
             const dateObj = new Date(currentDate + 'T00:00:00');
-            document.getElementById('header-date').innerText = dateObj.toLocaleDateString('en-US', options);
+            el.innerText = dateObj.toLocaleDateString('en-US', options);
         }
 
-        // Tab Navigation
         function switchTab(tabNum) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(screen-${tabNum}).classList.add('active');
+            const target = document.getElementById(`screen-${tabNum}`);
+            if(target) target.classList.add('active');
 
             for(let i=1; i<=3; i++) {
-                const btn = document.getElementById(nav-btn-${i});
+                const btn = document.getElementById(`nav-btn-${i}`);
+                if(!btn) continue;
                 if(i === tabNum) {
                     btn.classList.remove('text-slate-400');
                     btn.classList.add('text-cyan-400');
@@ -305,12 +316,12 @@
             if(tabNum === 2) renderSummaryScreen();
         }
 
-        // Date Switching on Screen 2
         function changeDate(days) {
             let d = new Date(currentDate + 'T00:00:00');
             d.setDate(d.getDate() + days);
             currentDate = d.toISOString().split('T')[0];
-            document.getElementById('summary-date-picker').value = currentDate;
+            const dp = document.getElementById('summary-date-picker');
+            if(dp) dp.value = currentDate;
             updateHeaderDate();
             renderDashboard();
             renderSummaryScreen();
@@ -324,31 +335,42 @@
             renderSummaryScreen();
         }
 
-        // Modal Controls
         function openLogModal(category) {
             currentCategory = category;
-            document.getElementById('modal-title').innerText = Log ${category};
-            document.getElementById('modal-input-name').value = '';
-            document.getElementById('modal-input-cal').value = '';
+            const titleEl = document.getElementById('modal-title');
+            if(titleEl) titleEl.innerText = `Log ${category}`;
+            
+            const nameInput = document.getElementById('modal-input-name');
+            const calInput = document.getElementById('modal-input-cal');
+            if(nameInput) nameInput.value = '';
+            if(calInput) calInput.value = '';
+            
+            const labelName = document.getElementById('modal-label-name');
+            const labelCal = document.getElementById('modal-label-cal');
             
             if(category === 'exercise') {
-                document.getElementById('modal-label-name').innerText = 'Exercise Type';
-                document.getElementById('modal-label-cal').innerText = 'Calories Burned (kcal)';
+                if(labelName) labelName.innerText = 'Exercise Type';
+                if(labelCal) labelCal.innerText = 'Calories Burned (kcal)';
             } else {
-                document.getElementById('modal-label-name').innerText = 'Food Name';
-                document.getElementById('modal-label-cal').innerText = 'Calories (kcal)';
+                if(labelName) labelName.innerText = 'Food Name';
+                if(labelCal) labelCal.innerText = 'Calories (kcal)';
             }
-            document.getElementById('log-modal').classList.remove('hidden');
+            const modal = document.getElementById('log-modal');
+            if(modal) modal.classList.remove('hidden');
         }
 
         function closeLogModal() {
-            document.getElementById('log-modal').classList.add('hidden');
+            const modal = document.getElementById('log-modal');
+            if(modal) modal.classList.add('hidden');
         }
 
-        // Save Log Item
         function saveLogItem() {
-            const name = document.getElementById('modal-input-name').value.trim();
-            const cal = parseInt(document.getElementById('modal-input-cal').value);
+            const nameInput = document.getElementById('modal-input-name');
+            const calInput = document.getElementById('modal-input-cal');
+            if(!nameInput || !calInput) return;
+
+            const name = nameInput.value.trim();
+            const cal = parseInt(calInput.value);
             if(!name || isNaN(cal)) {
                 alert('Please enter valid name and calories.');
                 return;
@@ -364,14 +386,16 @@
             renderDashboard();
         }
 
-        // Save Data to LocalStorage
         function saveToStorage() {
-            localStorage.setItem('rolling_fitness_data', JSON.stringify(appData));
+            try {
+                localStorage.setItem('rolling_fitness_data', JSON.stringify(appData));
+            } catch(e) {
+                console.error('Storage save error:', e);
+            }
         }
 
-        // Render Dashboard (Screen 1)
         function renderDashboard() {
-            const dayLogs = appData.logs[currentDate] || { breakfast: [], lunch: [], dinner: [], snack: [], exercise: [] };
+            const dayLogs = (appData.logs && appData.logs[currentDate]) || { breakfast: [], lunch: [], dinner: [], snack: [], exercise: [] };
             
             let totalIn = 0;
             let totalBurned = 0;
@@ -380,28 +404,38 @@
                 const items = dayLogs[cat] || [];
                 const catSum = items.reduce((acc, item) => acc + item.cal, 0);
                 totalIn += catSum;
-                document.getElementById(summary-${cat}).innerText = items.length > 0 ? ${items.length} items (${catSum} kcal) : '0 items logged';
+                const sumEl = document.getElementById(`summary-${cat}`);
+                if(sumEl) {
+                    sumEl.innerText = items.length > 0 ? `${items.length} items (${catSum} kcal)` : '0 items logged';
+                }
             });
 
             const exItems = dayLogs['exercise'] || [];
             totalBurned = exItems.reduce((acc, item) => acc + item.cal, 0);
-            document.getElementById(summary-exercise).innerText = exItems.length > 0 ? ${exItems.length} activities (${totalBurned} kcal burned) : '0 items logged';
+            const exSumEl = document.getElementById(`summary-exercise`);
+            if(exSumEl) {
+                exSumEl.innerText = exItems.length > 0 ? `${exItems.length} activities (${totalBurned} kcal burned)` : '0 items logged';
+            }
 
-            const goal = appData.profile.goal || 1900;
+            const goal = (appData.profile && appData.profile.goal) || 1900;
             const left = goal - totalIn + totalBurned;
 
-            document.getElementById('stat-left').innerText = left;
-            document.getElementById('stat-burned').innerText = totalBurned;
-            document.getElementById('stat-goal').innerText = goal;
+            const leftEl = document.getElementById('stat-left');
+            const burnedEl = document.getElementById('stat-burned');
+            const goalEl = document.getElementById('stat-goal');
+
+            if(leftEl) leftEl.innerText = left;
+            if(burnedEl) burnedEl.innerText = totalBurned;
+            if(goalEl) goalEl.innerText = goal;
         }
 
-        // Render Summary Screen (Screen 2)
         function renderSummaryScreen() {
             const container = document.getElementById('date-summary-details');
-            const dayLogs = appData.logs[currentDate];
+            if(!container) return;
+            const dayLogs = appData.logs ? appData.logs[currentDate] : null;
             
             if(!dayLogs) {
-                container.innerHTML = <p class="text-xs text-slate-500 italic text-center py-4">No records found for this date.</p>;
+                container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-4">No records found for this date.</p>`;
                 return;
             }
 
@@ -413,30 +447,35 @@
             categories.forEach(cat => {
                 const items = dayLogs[cat] || [];
                 if(items.length > 0) {
-                    html += <div class="border-b border-slate-800 pb-2 mb-2"><span class="text-xs uppercase font-bold text-cyan-400">${cat}</span>;
+                    html += `<div class="border-b border-slate-800 pb-2 mb-2"><span class="text-xs uppercase font-bold text-cyan-400">${cat}</span>`;
                     items.forEach(item => {
-                        html += <div class="flex justify-between text-xs text-slate-300 py-0.5"><span>${item.name}</span><span>${item.cal} kcal</span></div>;
+                        html += `<div class="flex justify-between text-xs text-slate-300 py-0.5"><span>${item.name}</span><span>${item.cal} kcal</span></div>`;
                         if(cat === 'exercise') totalBurned += item.cal;
                         else totalIn += item.cal;
                     });
-                    html += </div>;
+                    html += `</div>`;
                 }
             });
 
             if(html === '') {
-                container.innerHTML = <p class="text-xs text-slate-500 italic text-center py-4">No records found for this date.</p>;
+                container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-4">No records found for this date.</p>`;
             } else {
-                html += <div class="pt-2 flex justify-between text-xs font-bold text-amber-400"><span>Net Intake:</span><span>${totalIn - totalBurned} kcal (In: ${totalIn}, Burned: ${totalBurned})</span></div>;
+                html += `<div class="pt-2 flex justify-between text-xs font-bold text-amber-400"><span>Net Intake:</span><span>${totalIn - totalBurned} kcal (In: ${totalIn}, Burned: ${totalBurned})</span></div>`;
                 container.innerHTML = html;
             }
         }
 
-        // Profile & Settings
         function saveProfile() {
-            appData.profile.height = parseFloat(document.getElementById('input-height').value) || 179;
-            appData.profile.weight = parseFloat(document.getElementById('input-weight').value) || 93;
-            appData.profile.gender = document.getElementById('input-gender').value;
-            appData.profile.goal = parseInt(document.getElementById('input-goal').value) || 1900;
+            const h = document.getElementById('input-height');
+            const w = document.getElementById('input-weight');
+            const g = document.getElementById('input-gender');
+            const goal = document.getElementById('input-goal');
+
+            if(!appData.profile) appData.profile = {};
+            if(h) appData.profile.height = parseFloat(h.value) || 179;
+            if(w) appData.profile.weight = parseFloat(w.value) || 93;
+            if(g) appData.profile.gender = g.value;
+            if(goal) appData.profile.goal = parseInt(goal.value) || 1900;
 
             saveToStorage();
             loadProfileToUI();
@@ -444,46 +483,67 @@
         }
 
         function loadProfileToUI() {
-            const p = appData.profile;
-            document.getElementById('input-height').value = p.height;
-            document.getElementById('input-weight').value = p.weight;
-            document.getElementById('input-gender').value = p.gender;
-            document.getElementById('input-goal').value = p.goal;
+            const p = appData.profile || { height: 179, weight: 93, gender: 'male', goal: 1900 };
+            
+            const ih = document.getElementById('input-height');
+            const iw = document.getElementById('input-weight');
+            const ig = document.getElementById('input-gender');
+            const igoal = document.getElementById('input-goal');
 
-            document.getElementById('profile-display-weight').innerText = p.weight;
-            document.getElementById('profile-display-height').innerText = p.height;
-            document.getElementById('profile-display-goal').innerText = p.goal;
+            if(ih) ih.value = p.height;
+            if(iw) iw.value = p.weight;
+            if(ig) ig.value = p.gender;
+            if(igoal) igoal.value = p.goal;
 
-            // Calculate BMI
+            const dw = document.getElementById('profile-display-weight');
+            const dh = document.getElementById('profile-display-height');
+            const dg = document.getElementById('profile-display-goal');
+
+            if(dw) dw.innerText = p.weight;
+            if(dh) dh.innerText = p.height;
+            if(dg) dg.innerText = p.goal;
+
             const heightM = p.height / 100;
             const bmi = (p.weight / (heightM * heightM)).toFixed(1);
             let status = '';
-            if(bmi < 18.5) status = Underweight (${bmi});
-            else if(bmi < 25) status = Normal (${bmi});
-            else if(bmi < 30) status = Overweight (${bmi});
-            else status = Obese (${bmi});
+            if(bmi < 18.5) status = `Underweight (${bmi})`;
+            else if(bmi < 25) status = `Normal (${bmi})`;
+            else if(bmi < 30) status = `Overweight (${bmi})`;
+            else status = `Obese (${bmi})`;
 
-            document.getElementById('bmi-status').innerText = status;
+            const bmiEl = document.getElementById('bmi-status');
+            if(bmiEl) bmiEl.innerText = status;
 
-            // Recommended Water Volume (approx 35ml per kg)
             const waterL = ((p.weight * 0.035)).toFixed(1);
-            document.getElementById('water-status').innerText = ${waterL} Liters;
+            const waterEl = document.getElementById('water-status');
+            if(waterEl) waterEl.innerText = `${waterL} Liters`;
         }
 
         function saveAlarms() {
-            appData.alarms.mealTime = document.getElementById('alarm-meal-time').value;
-            appData.alarms.mealActive = document.getElementById('alarm-meal-toggle').checked;
-            appData.alarms.waterTime = document.getElementById('alarm-water-time').value;
-            appData.alarms.waterActive = document.getElementById('alarm-water-toggle').checked;
+            const mt = document.getElementById('alarm-meal-time');
+            const mc = document.getElementById('alarm-meal-toggle');
+            const wt = document.getElementById('alarm-water-time');
+            const wc = document.getElementById('alarm-water-toggle');
+
+            if(!appData.alarms) appData.alarms = {};
+            if(mt) appData.alarms.mealTime = mt.value;
+            if(mc) appData.alarms.mealActive = mc.checked;
+            if(wt) appData.alarms.waterTime = wt.value;
+            if(wc) appData.alarms.waterActive = wc.checked;
             saveToStorage();
         }
 
         function loadAlarmsToUI() {
-            const a = appData.alarms;
-            document.getElementById('alarm-meal-time').value = a.mealTime;
-            document.getElementById('alarm-meal-toggle').checked = a.mealActive;
-            document.getElementById('alarm-water-time').value = a.waterTime;
-            document.getElementById('alarm-water-toggle').checked = a.waterActive;
+            const a = appData.alarms || { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false };
+            const mt = document.getElementById('alarm-meal-time');
+            const mc = document.getElementById('alarm-meal-toggle');
+            const wt = document.getElementById('alarm-water-time');
+            const wc = document.getElementById('alarm-water-toggle');
+
+            if(mt) mt.value = a.mealTime;
+            if(mc) mc.checked = a.mealActive;
+            if(wt) wt.value = a.waterTime;
+            if(wc) wc.checked = a.waterActive;
         }
     </script>
 </body>
