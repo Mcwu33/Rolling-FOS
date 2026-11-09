@@ -13,7 +13,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 强制确保只有带 active 的页面才显示，解决挤在同一页的 bug */
+        /* 强制确保只有带 active 的页面才显示 */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
     </style>
@@ -276,7 +276,7 @@
         </button>
     </nav>
 
-    <!-- POPUP MODAL FOR LOGGING -->
+    <!-- POPUP MODAL FOR ADDING / EDITING LOG -->
     <div id="log-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
@@ -311,6 +311,7 @@
 
         let currentDate = getLocalDateString();
         let currentCategory = '';
+        let editingItemId = null; // 用于判断当前是新增还是编辑
         
         let appData = {
             profile: { height: '', weight: '', gender: 'male', goal: 1900 },
@@ -349,7 +350,6 @@
         }
 
         function switchTab(tabNum) {
-            // 确保安全切换各个 Tab 页面
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(`screen-${tabNum}`);
             if(target) target.classList.add('active');
@@ -398,8 +398,10 @@
             renderSummaryScreen();
         }
 
+        // 打开新增弹窗
         function openLogModal(category) {
             currentCategory = category;
+            editingItemId = null; // 标记为新增
             const titleEl = document.getElementById('modal-title');
             if(titleEl) titleEl.innerText = `Log ${category}`;
             
@@ -422,9 +424,26 @@
             if(modal) modal.classList.remove('hidden');
         }
 
+        // 打开编辑已有记录弹窗（新增功能）
+        function openEditModal(category, id, currentName, currentCal) {
+            currentCategory = category;
+            editingItemId = id; // 标记正在编辑的项 ID
+            const titleEl = document.getElementById('modal-title');
+            if(titleEl) titleEl.innerText = `Edit ${category}`;
+
+            const nameInput = document.getElementById('modal-input-name');
+            const calInput = document.getElementById('modal-input-cal');
+            if(nameInput) nameInput.value = currentName;
+            if(calInput) calInput.value = currentCal;
+
+            const modal = document.getElementById('log-modal');
+            if(modal) modal.classList.remove('hidden');
+        }
+
         function closeLogModal() {
             const modal = document.getElementById('log-modal');
             if(modal) modal.classList.add('hidden');
+            editingItemId = null;
         }
 
         function saveLogItem() {
@@ -443,7 +462,19 @@
                 appData.logs[currentDate] = { breakfast: [], lunch: [], dinner: [], snack: [], exercise: [] };
             }
 
-            appData.logs[currentDate][currentCategory].push({ id: Date.now(), name, cal });
+            if(editingItemId !== null) {
+                // 编辑现有项
+                const items = appData.logs[currentDate][currentCategory];
+                const item = items.find(i => i.id === editingItemId);
+                if(item) {
+                    item.name = name;
+                    item.cal = cal;
+                }
+            } else {
+                // 新增项
+                appData.logs[currentDate][currentCategory].push({ id: Date.now(), name, cal });
+            }
+
             saveToStorage();
             closeLogModal();
             renderDashboard();
@@ -488,11 +519,16 @@
                     } else {
                         let html = '';
                         items.forEach(item => {
+                            // 转义单引号以防止JS字符串截断
+                            const safeName = item.name.replace(/'/g, "\\'");
                             html += `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-lg text-xs border border-slate-200/60 dark:border-slate-800">
                                 <span class="text-slate-800 dark:text-slate-200">${item.name}</span>
                                 <div class="flex items-center space-x-3">
                                     <span class="text-cyan-600 dark:text-cyan-400 font-medium">${item.cal} kcal</span>
-                                    <button type="button" onclick="deleteLogItem('${cat}', ${item.id})" class="text-rose-500 dark:text-rose-400 hover:text-rose-600"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                    <div class="flex items-center space-x-2">
+                                        <button type="button" onclick="openEditModal('${cat}', ${item.id}, '${safeName}', ${item.cal})" class="text-slate-400 hover:text-cyan-500"><i class="fa-solid fa-pen text-xs"></i></button>
+                                        <button type="button" onclick="deleteLogItem('${cat}', ${item.id})" class="text-rose-500 dark:text-rose-400 hover:text-rose-600"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                    </div>
                                 </div>
                             </div>`;
                         });
@@ -516,11 +552,15 @@
                 } else {
                     let html = '';
                     exItems.forEach(item => {
+                        const safeName = item.name.replace(/'/g, "\\'");
                         html += `<div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-lg text-xs border border-slate-200/60 dark:border-slate-800">
                             <span class="text-slate-800 dark:text-slate-200">${item.name}</span>
                             <div class="flex items-center space-x-3">
                                 <span class="text-emerald-600 dark:text-emerald-400 font-medium">-${item.cal} kcal</span>
-                                <button type="button" onclick="deleteLogItem('exercise', ${item.id})" class="text-rose-500 dark:text-rose-400 hover:text-rose-600"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                <div class="flex items-center space-x-2">
+                                    <button type="button" onclick="openEditModal('exercise', ${item.id}, '${safeName}', ${item.cal})" class="text-slate-400 hover:text-cyan-500"><i class="fa-solid fa-pen text-xs"></i></button>
+                                    <button type="button" onclick="deleteLogItem('exercise', ${item.id})" class="text-rose-500 dark:text-rose-400 hover:text-rose-600"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                </div>
                             </div>
                         </div>`;
                     });
