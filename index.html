@@ -26,7 +26,7 @@
 
         <!-- ================= SCREEN 1: DASHBOARD & LOGGING ================= -->
         <section id="screen-1" class="tab-content active space-y-6">
-            <!-- Part 1: Phone Data Balance Style Cards -->
+            <!-- Part 1: Balance Sheet Cards -->
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-5 shadow-xl">
                 <h2 class="text-xs uppercase tracking-widest text-slate-400 mb-4 font-semibold">Calories Balance Sheet</h2>
                 <div class="grid grid-cols-3 gap-3 text-center">
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <!-- Part 2: 5 Selections / Categories with Detail Lists -->
+            <!-- Part 2: Today's Logs -->
             <div class="space-y-4">
                 <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold px-1">Today's Logs</h3>
                 
@@ -142,9 +142,7 @@
 
             <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
                 <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Selected Date Summary</h3>
-                <div id="date-summary-details" class="space-y-3 text-sm">
-                    <!-- Populated dynamically -->
-                </div>
+                <div id="date-summary-details" class="space-y-3 text-sm"></div>
             </div>
         </section>
 
@@ -152,7 +150,13 @@
         <section id="screen-3" class="tab-content space-y-6">
             <!-- Profile Metrics -->
             <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
-                <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">User Profile & Metrics</h3>
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">User Profile & Metrics</h3>
+                    <button onclick="autoCalculateGoal()" class="bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i><span>Auto Goal</span>
+                    </button>
+                </div>
+
                 <div class="grid grid-cols-3 gap-3 text-center">
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
                         <span class="text-[10px] text-slate-400 block">Weight</span>
@@ -202,7 +206,7 @@
                 </div>
             </div>
 
-            <!-- Alarms Settings (Dynamic Add/Delete) -->
+            <!-- Alarms Settings -->
             <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Reminder Alarms</h3>
@@ -210,10 +214,7 @@
                         <i class="fa-solid fa-plus"></i><span>Customize Timer</span>
                     </button>
                 </div>
-                
-                <div id="alarms-container" class="space-y-3">
-                    <!-- Dynamic alarms will load here -->
-                </div>
+                <div id="alarms-container" class="space-y-3"></div>
             </div>
 
             <!-- Footer Mission / Vision / Version -->
@@ -242,7 +243,7 @@
         </button>
     </nav>
 
-    <!-- POPUP MODAL FOR LOGGING FOOD / EXERCISE -->
+    <!-- POPUP MODAL FOR LOGGING -->
     <div id="log-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
@@ -268,7 +269,6 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Get local date string YYYY-MM-DD safely
         function getLocalDateString(d = new Date()) {
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -279,7 +279,6 @@
         let currentDate = getLocalDateString();
         let currentCategory = '';
         
-        // Default appData with privacy blank profile for new visitors
         let appData = {
             profile: { height: '', weight: '', gender: 'male', goal: 1900 },
             alarms: [
@@ -338,7 +337,6 @@
                 }
             }
 
-            // Requirement: Clicking Summary tab always resets to Today's date
             if(tabNum === 2) {
                 currentDate = getLocalDateString();
                 const dp = document.getElementById('summary-date-picker');
@@ -352,7 +350,6 @@
             }
         }
 
-        // Smooth Date Navigation
         function changeDate(days) {
             let [y, m, d] = currentDate.split('-').map(Number);
             let dObj = new Date(y, m - 1, d);
@@ -455,7 +452,6 @@
                     sumEl.innerText = items.length > 0 ? `${items.length} items (${catSum} kcal)` : '0 items logged';
                 }
 
-                // Render list items with delete button
                 const listEl = document.getElementById(`list-${cat}`);
                 if(listEl) {
                     if(items.length === 0) {
@@ -503,8 +499,7 @@
                 }
             }
 
-            const goal = (appData.profile && appData.profile.goal) || 1900;
-            // Formula updated: Left = Goal - Total Intake (Burned is NOT added into Left anymore)
+            const goal = (appData.profile && appData.profile.goal !== '') ? parseInt(appData.profile.goal) : 1900;
             const left = goal - totalIn;
 
             const leftEl = document.getElementById('stat-left');
@@ -550,6 +545,34 @@
                 html += `<div class="pt-2 flex justify-between text-xs font-bold text-amber-400"><span>Net Intake:</span><span>${totalIn - totalBurned} kcal (In: ${totalIn}, Burned: ${totalBurned})</span></div>`;
                 container.innerHTML = html;
             }
+        }
+
+        // Smart Auto-Calculate Goal Function
+        function autoCalculateGoal() {
+            const h = parseFloat(document.getElementById('input-height').value);
+            const w = parseFloat(document.getElementById('input-weight').value);
+            const gender = document.getElementById('input-gender').value;
+
+            if(!h || !w || h <= 0 || w <= 0) {
+                alert('Please enter valid height and weight first to auto-calculate goal.');
+                return;
+            }
+
+            // Mifflin-St Jeor formula (assuming average age 30)
+            let bmr = (10 * w) + (6.25 * h) - (5 * 30);
+            if(gender === 'male') {
+                bmr += 5;
+            } else {
+                bmr -= 161;
+            }
+
+            // Multiply by light activity factor (1.2) and subtract 400 for standard fat loss goal
+            let tdee = Math.round(bmr * 1.2);
+            let recommendedGoal = Math.max(1200, tdee - 300); // Floor at safe 1200 kcal
+
+            document.getElementById('input-goal').value = recommendedGoal;
+            saveProfile();
+            alert(`Smart Goal Calculated: ${recommendedGoal} kcal (Based on your BMR & TDEE)`);
         }
 
         function saveProfile() {
@@ -611,7 +634,6 @@
             }
         }
 
-        // Alarm Dynamic Add & Delete
         function addAlarm() {
             if(!appData.alarms) appData.alarms = [];
             const newId = Date.now();
