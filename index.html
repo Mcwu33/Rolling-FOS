@@ -26,7 +26,7 @@
 
         <!-- ================= SCREEN 1: DASHBOARD & LOGGING ================= -->
         <section id="screen-1" class="tab-content active space-y-6">
-            <!-- Part 1: Balance Sheet Cards -->
+            <!-- Balance Sheet Cards -->
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-5 shadow-xl">
                 <h2 class="text-xs uppercase tracking-widest text-slate-400 mb-4 font-semibold">Calories Balance Sheet</h2>
                 <div class="grid grid-cols-3 gap-3 text-center">
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <!-- Part 2: Today's Logs -->
+            <!-- Today's Logs -->
             <div class="space-y-4">
                 <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold px-1">Today's Logs</h3>
                 
@@ -200,7 +200,7 @@
                         </div>
                         <div>
                             <label class="text-xs text-slate-400 block mb-1">Calories Goal</label>
-                            <input type="number" id="input-goal" value="1900" oninput="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
+                            <input type="number" id="input-goal" placeholder="e.g. 1900" oninput="saveProfile()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm outline-none focus:border-cyan-400">
                         </div>
                     </div>
                 </div>
@@ -210,11 +210,38 @@
             <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Reminder Alarms</h3>
-                    <button onclick="addAlarm()" class="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                    <button type="button" onclick="addAlarm()" class="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1 cursor-pointer">
                         <i class="fa-solid fa-plus"></i><span>Customize Timer</span>
                     </button>
                 </div>
-                <div id="alarms-container" class="space-y-3"></div>
+                
+                <div class="space-y-3">
+                    <!-- Fixed Default Alarms -->
+                    <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-200">Post Meal Reminder</h4>
+                            <p class="text-[10px] text-slate-400">Alert after meal logging</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="time" id="alarm-meal-time" value="13:00" onchange="saveFixedAlarms()" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none text-slate-200">
+                            <input type="checkbox" id="alarm-meal-toggle" onchange="saveFixedAlarms()" class="w-4 h-4 accent-cyan-500 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-200">Water Reminder</h4>
+                            <p class="text-[10px] text-slate-400">Stay hydrated throughout the day</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="time" id="alarm-water-time" value="10:00" onchange="saveFixedAlarms()" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none text-slate-200">
+                            <input type="checkbox" id="alarm-water-toggle" onchange="saveFixedAlarms()" class="w-4 h-4 accent-cyan-500 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Custom Alarms Container -->
+                    <div id="custom-alarms-list" class="space-y-3 pt-1"></div>
+                </div>
             </div>
 
             <!-- Footer Mission / Vision / Version -->
@@ -281,10 +308,8 @@
         
         let appData = {
             profile: { height: '', weight: '', gender: 'male', goal: 1900 },
-            alarms: [
-                { id: 1, title: 'Post Meal Reminder', time: '13:00', active: false },
-                { id: 2, title: 'Water Reminder', time: '10:00', active: false }
-            ],
+            fixedAlarms: { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false },
+            customAlarms: [],
             logs: {}
         };
 
@@ -292,11 +317,11 @@
             const saved = localStorage.getItem('rolling_fitness_data');
             if (saved) {
                 appData = JSON.parse(saved);
-                if(!appData.alarms) {
-                    appData.alarms = [
-                        { id: 1, title: 'Post Meal Reminder', time: '13:00', active: false },
-                        { id: 2, title: 'Water Reminder', time: '10:00', active: false }
-                    ];
+                if(!appData.fixedAlarms) {
+                    appData.fixedAlarms = { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false };
+                }
+                if(!appData.customAlarms) {
+                    appData.customAlarms = [];
                 }
             }
         } catch (e) {
@@ -308,7 +333,8 @@
             if(datePicker) datePicker.value = currentDate;
             updateHeaderDate();
             loadProfileToUI();
-            renderAlarms();
+            loadFixedAlarmsToUI();
+            renderCustomAlarms();
             renderDashboard();
         });
 
@@ -463,7 +489,7 @@
                                 <span class="text-slate-200">${item.name}</span>
                                 <div class="flex items-center space-x-3">
                                     <span class="text-cyan-400 font-medium">${item.cal} kcal</span>
-                                    <button onclick="deleteLogItem('${cat}', ${item.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                    <button type="button" onclick="deleteLogItem('${cat}', ${item.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can text-xs"></i></button>
                                 </div>
                             </div>`;
                         });
@@ -491,7 +517,7 @@
                             <span class="text-slate-200">${item.name}</span>
                             <div class="flex items-center space-x-3">
                                 <span class="text-emerald-400 font-medium">-${item.cal} kcal</span>
-                                <button onclick="deleteLogItem('exercise', ${item.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                <button type="button" onclick="deleteLogItem('exercise', ${item.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash-can text-xs"></i></button>
                             </div>
                         </div>`;
                     });
@@ -499,7 +525,7 @@
                 }
             }
 
-            const goal = (appData.profile && appData.profile.goal !== '') ? parseInt(appData.profile.goal) : 1900;
+            const goal = (appData.profile && appData.profile.goal !== '' && !isNaN(appData.profile.goal)) ? parseInt(appData.profile.goal) : 0;
             const left = goal - totalIn;
 
             const leftEl = document.getElementById('stat-left');
@@ -547,7 +573,6 @@
             }
         }
 
-        // Smart Auto-Calculate Goal Function
         function autoCalculateGoal() {
             const h = parseFloat(document.getElementById('input-height').value);
             const w = parseFloat(document.getElementById('input-weight').value);
@@ -558,7 +583,6 @@
                 return;
             }
 
-            // Mifflin-St Jeor formula (assuming average age 30)
             let bmr = (10 * w) + (6.25 * h) - (5 * 30);
             if(gender === 'male') {
                 bmr += 5;
@@ -566,9 +590,8 @@
                 bmr -= 161;
             }
 
-            // Multiply by light activity factor (1.2) and subtract 400 for standard fat loss goal
             let tdee = Math.round(bmr * 1.2);
-            let recommendedGoal = Math.max(1200, tdee - 300); // Floor at safe 1200 kcal
+            let recommendedGoal = Math.max(1200, tdee - 300);
 
             document.getElementById('input-goal').value = recommendedGoal;
             saveProfile();
@@ -585,7 +608,7 @@
             if(h) appData.profile.height = h.value === '' ? '' : parseFloat(h.value);
             if(w) appData.profile.weight = w.value === '' ? '' : parseFloat(w.value);
             if(g) appData.profile.gender = g.value;
-            if(goal) appData.profile.goal = goal.value === '' ? 1900 : parseInt(goal.value);
+            if(goal) appData.profile.goal = goal.value === '' ? '' : parseInt(goal.value);
 
             saveToStorage();
             loadProfileToUI();
@@ -603,7 +626,7 @@
             if(ih) ih.value = p.height;
             if(iw) iw.value = p.weight;
             if(ig) ig.value = p.gender;
-            if(igoal) igoal.value = p.goal;
+            if(igoal) igoal.value = p.goal !== '' ? p.goal : '';
 
             const dw = document.getElementById('profile-display-weight');
             const dh = document.getElementById('profile-display-height');
@@ -611,7 +634,7 @@
 
             if(dw) dw.innerText = p.weight !== '' ? p.weight : '0';
             if(dh) dh.innerText = p.height !== '' ? p.height : '0';
-            if(dg) dg.innerText = p.goal !== '' ? p.goal : '1900';
+            if(dg) dg.innerText = (p.goal !== '' && !isNaN(p.goal)) ? p.goal : '0';
 
             const bmiEl = document.getElementById('bmi-status');
             const waterEl = document.getElementById('water-status');
@@ -634,49 +657,77 @@
             }
         }
 
+        function saveFixedAlarms() {
+            const mt = document.getElementById('alarm-meal-time');
+            const mc = document.getElementById('alarm-meal-toggle');
+            const wt = document.getElementById('alarm-water-time');
+            const wc = document.getElementById('alarm-water-toggle');
+
+            if(!appData.fixedAlarms) appData.fixedAlarms = {};
+            if(mt) appData.fixedAlarms.mealTime = mt.value;
+            if(mc) appData.fixedAlarms.mealActive = mc.checked;
+            if(wt) appData.fixedAlarms.waterTime = wt.value;
+            if(wc) appData.fixedAlarms.waterActive = wc.checked;
+            saveToStorage();
+        }
+
+        function loadFixedAlarmsToUI() {
+            const fa = appData.fixedAlarms || { mealTime: '13:00', mealActive: false, waterTime: '10:00', waterActive: false };
+            const mt = document.getElementById('alarm-meal-time');
+            const mc = document.getElementById('alarm-meal-toggle');
+            const wt = document.getElementById('alarm-water-time');
+            const wc = document.getElementById('alarm-water-toggle');
+
+            if(mt) mt.value = fa.mealTime;
+            if(mc) mc.checked = fa.mealActive;
+            if(wt) wt.value = fa.waterTime;
+            if(wc) wc.checked = fa.waterActive;
+        }
+
         function addAlarm() {
-            if(!appData.alarms) appData.alarms = [];
+            if(!appData.customAlarms) appData.customAlarms = [];
             const newId = Date.now();
-            appData.alarms.push({ id: newId, title: 'Custom Reminder', time: '12:00', active: false });
+            appData.customAlarms.push({ id: newId, title: 'Custom Reminder', time: '12:00', active: false });
             saveToStorage();
-            renderAlarms();
+            renderCustomAlarms();
         }
 
-        function deleteAlarm(id) {
-            appData.alarms = appData.alarms.filter(a => a.id !== id);
+        function deleteCustomAlarm(id) {
+            appData.customAlarms = appData.customAlarms.filter(a => a.id !== id);
             saveToStorage();
-            renderAlarms();
+            renderCustomAlarms();
         }
 
-        function updateAlarm(id, field, value) {
-            const alarm = appData.alarms.find(a => a.id === id);
+        function updateCustomAlarm(id, field, value) {
+            const alarm = appData.customAlarms.find(a => a.id === id);
             if(alarm) {
+                if(field === 'title') alarm.title = value;
                 if(field === 'time') alarm.time = value;
                 if(field === 'active') alarm.active = value;
                 saveToStorage();
             }
         }
 
-        function renderAlarms() {
-            const container = document.getElementById('alarms-container');
+        function renderCustomAlarms() {
+            const container = document.getElementById('custom-alarms-list');
             if(!container) return;
             
-            if(!appData.alarms || appData.alarms.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-2">No custom timers added.</p>`;
+            if(!appData.customAlarms || appData.customAlarms.length === 0) {
+                container.innerHTML = '';
                 return;
             }
 
             let html = '';
-            appData.alarms.forEach(a => {
+            appData.customAlarms.forEach(a => {
                 html += `<div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
                     <div>
-                        <input type="text" value="${a.title}" oninput="updateAlarm(${a.id}, 'title', this.value)" class="text-sm font-semibold bg-transparent text-slate-200 outline-none border-b border-transparent focus:border-cyan-400 w-36">
+                        <input type="text" value="${a.title}" oninput="updateCustomAlarm(${a.id}, 'title', this.value)" class="text-sm font-semibold bg-transparent text-slate-200 outline-none border-b border-transparent focus:border-cyan-400 w-36">
                         <p class="text-[10px] text-slate-400">Custom alert timer</p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <input type="time" value="${a.time}" onchange="updateAlarm(${a.id}, 'time', this.value)" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none text-slate-200">
-                        <input type="checkbox" ${a.active ? 'checked' : ''} onchange="updateAlarm(${a.id}, 'active', this.checked)" class="w-4 h-4 accent-cyan-500 cursor-pointer">
-                        <button onclick="deleteAlarm(${a.id})" class="text-rose-400 hover:text-rose-300 ml-1"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        <input type="time" value="${a.time}" onchange="updateCustomAlarm(${a.id}, 'time', this.value)" class="bg-slate-800 text-xs px-2 py-1 rounded border border-slate-700 outline-none text-slate-200">
+                        <input type="checkbox" ${a.active ? 'checked' : ''} onchange="updateCustomAlarm(${a.id}, 'active', this.checked)" class="w-4 h-4 accent-cyan-500 cursor-pointer">
+                        <button type="button" onclick="deleteCustomAlarm(${a.id})" class="text-rose-400 hover:text-rose-300 ml-1"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </div>
                 </div>`;
             });
